@@ -1,0 +1,19 @@
+{
+    "university": "Assumption University Thailand",
+    "campuses": [
+      {
+        "name": "Hua Mak Campus",
+        "address": "592/3 Ramkhamhaeng 24 Rd, Bangkok",
+        "phone": "+66 2 719 1919",
+        "website": "https://www.au.edu"
+      },
+      {
+        "name": "Suvarnabhumi Campus",
+        "address": "88 Moo.8, Bang Na-Trad Km.26, Samutprakarn",
+        "phone": "+66 2 723 2323",
+        "website": "https://www.au.edu"
+      }
+    ],
+    "main_website": "https://www.au.edu"
+  }
+  

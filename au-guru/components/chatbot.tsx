@@ -1,12 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Card, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
+
 import { Send, Settings, Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
 
@@ -27,29 +27,69 @@ export default function Chatbot() {
     }
   ])
   const [inputValue, setInputValue] = useState("")
+  const [mounted, setMounted] = useState(false)
   const { theme, setTheme } = useTheme()
 
-  const handleSend = () => {
-    if (inputValue.trim()) {
-      const newMessage: Message = {
+  const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const handleSend = async () => {
+    if (inputValue.trim() && !isLoading) {
+      const userMessage: Message = {
         id: Date.now().toString(),
         content: inputValue,
         isBot: false,
         timestamp: new Date()
       }
-      setMessages(prev => [...prev, newMessage])
+      setMessages(prev => [...prev, userMessage])
       setInputValue("")
+      setIsLoading(true)
       
-      // Simulate bot response
-      setTimeout(() => {
-        const botResponse: Message = {
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: inputValue,
+          }),
+        })
+
+        const data = await response.json()
+        
+        if (response.ok) {
+          const botResponse: Message = {
+            id: (Date.now() + 1).toString(),
+            content: data.response,
+            isBot: true,
+            timestamp: new Date()
+          }
+          setMessages(prev => [...prev, botResponse])
+        } else {
+          const errorResponse: Message = {
+            id: (Date.now() + 1).toString(),
+            content: "I apologize, but I'm having trouble processing your request right now. Please try again or contact AU directly at +66 2 719 1919.",
+            isBot: true,
+            timestamp: new Date()
+          }
+          setMessages(prev => [...prev, errorResponse])
+        }
+      } catch (error) {
+        console.error('Chat error:', error)
+        const errorResponse: Message = {
           id: (Date.now() + 1).toString(),
-          content: "Thank you for your question! I'm here to help you with information about Assumption University. Please let me know what specific information you're looking for.",
+          content: "I apologize, but I'm having trouble processing your request right now. Please try again or contact AU directly at +66 2 719 1919.",
           isBot: true,
           timestamp: new Date()
         }
-        setMessages(prev => [...prev, botResponse])
-      }, 1000)
+        setMessages(prev => [...prev, errorResponse])
+      } finally {
+        setIsLoading(false)
+      }
     }
   }
 
@@ -92,8 +132,9 @@ export default function Chatbot() {
                 size="icon"
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                 className="h-8 w-8"
+                suppressHydrationWarning
               >
-                {theme === "dark" ? (
+                {mounted && theme === "dark" ? (
                   <Sun className="h-4 w-4" />
                 ) : (
                   <Moon className="h-4 w-4" />
@@ -138,6 +179,30 @@ export default function Chatbot() {
             </div>
           </div>
         ))}
+        
+        {/* Loading indicator */}
+        {isLoading && (
+          <div className="flex gap-3 justify-start">
+            <Avatar className="h-8 w-8 shrink-0 mt-1">
+              <AvatarImage src="/api/placeholder/32/32" alt="AU Bot" />
+              <AvatarFallback className="bg-red-500 text-white text-xs font-medium">
+                AU
+              </AvatarFallback>
+            </Avatar>
+            <div className="max-w-[80%] text-left">
+              <div className="inline-block rounded-lg px-4 py-2 bg-muted text-foreground">
+                <div className="flex items-center gap-1">
+                  <div className="flex space-x-1">
+                    <div className="w-2 h-2 bg-current rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                    <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  </div>
+                  <span className="text-sm text-muted-foreground ml-2">AU Smart Assistant is typing...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Input Area */}
@@ -165,16 +230,17 @@ export default function Chatbot() {
               placeholder="Ask me about AU programs, admissions, campus life..."
               className="flex-1"
               onKeyPress={(e) => {
-                if (e.key === "Enter") {
+                if (e.key === "Enter" && !isLoading) {
                   handleSend()
                 }
               }}
+              disabled={isLoading}
             />
             <Button 
               onClick={handleSend} 
               size="icon"
               className="shrink-0"
-              disabled={!inputValue.trim()}
+              disabled={!inputValue.trim() || isLoading}
             >
               <Send className="h-4 w-4" />
             </Button>

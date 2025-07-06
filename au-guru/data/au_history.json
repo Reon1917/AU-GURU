@@ -1,0 +1,52 @@
+{
+    "university": "Assumption University Thailand",
+    "history": {
+      "origins": {
+        "original_institution": "Assumption Commercial College (ACC)",
+        "registration_year": 1938,
+        "founder": "Brothers of St. Gabriel",
+        "initial_focus": "Business training in English",
+        "notable_dates": [
+          {
+            "year": 1969,
+            "event": "Started four-year Bachelor of Business Administration program affiliated with University of Santa Clara, California"
+          },
+          {
+            "year": 1972,
+            "event": "Officially established as Assumption Business Administration College (ABAC) with Ministry of Education approval"
+          },
+          {
+            "year": 1973,
+            "event": "First female students admitted"
+          },
+          {
+            "year": 1975,
+            "event": "Accredited by Ministry of University Affairs"
+          },
+          {
+            "year": 1990,
+            "event": "Granted full university status as Assumption University"
+          }
+        ],
+        "philosophy": "Open, international community with moral integrity and high ethical standards",
+        "student_body": {
+          "total_students": 100000,
+          "international_students": "From over 100 countries"
+        }
+      },
+      "founder_background": {
+        "religious_order": "Brothers of St. Gabriel",
+        "founded_in": 1705,
+        "founder_name": "St. Louis Marie De Montfort",
+        "mission": "Education and philanthropic activities",
+        "presence_in_thailand_since": 1901
+      },
+      "historical_notes": [
+        "Assumption College founded in 1885 by Rev. Father Emile August Colombet",
+        "First commercial college in Thailand",
+        "Teaching conducted in English is a hallmark",
+        "Faculty and students maintain cultural and religious identity freely"
+      ]
+    }
+  }
+  

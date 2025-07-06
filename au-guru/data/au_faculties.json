@@ -1,0 +1,70 @@
+{
+    "university": "Assumption University Thailand",
+    "faculties": {
+      "undergraduate": [
+        {
+          "name": "School of Business and Management",
+          "abbreviation": "BBA",
+          "programs": ["Business Administration", "Marketing", "Finance", "International Business"]
+        },
+        {
+          "name": "School of Arts",
+          "programs": ["Business English", "Business French"]
+        },
+        {
+          "name": "School of Music",
+          "programs": ["Music Management", "Performance"]
+        },
+        {
+          "name": "School of Science and Technology",
+          "programs": ["Computer Science", "Internet Communications Technology", "Science"]
+        },
+        {
+          "name": "School of Communication Arts",
+          "programs": ["Mass Communication", "Advertising", "Public Relations"]
+        },
+        {
+          "name": "School of Architecture and Design",
+          "programs": ["Architecture", "Interior Design"]
+        },
+        {
+          "name": "School of Engineering",
+          "programs": ["Electrical Engineering", "Mechanical Engineering"]
+        },
+        {
+          "name": "School of Biotechnology",
+          "programs": ["Biotechnology"]
+        },
+        {
+          "name": "School of Nursing Science",
+          "programs": ["Nursing"]
+        },
+        {
+          "name": "School of Law",
+          "programs": ["Law"]
+        },
+        {
+          "name": "School of Medicine - St. Luke",
+          "programs": ["Medicine"]
+        }
+      ],
+      "graduate": {
+        "master": [
+          "School of Business and Advanced Technology Management",
+          "School of Biotechnology",
+          "School of Human Sciences",
+          "School of Science and Technology",
+          "School of Management and Economics",
+          "School of Law"
+        ],
+        "doctoral": [
+          "School of Business and Advanced Technology Management",
+          "School of Science and Technology",
+          "School of Biotechnology",
+          "School of Human Sciences",
+          "School of Management and Economics"
+        ]
+      }
+    }
+  }
+  

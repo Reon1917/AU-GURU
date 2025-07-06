@@ -1,0 +1,43 @@
+{
+    "university": "Assumption University Thailand",
+    "tuition_fees_thb": {
+      "undergraduate": {
+        "domestic_students": {
+          "annual_fee_range": {
+            "min": 112000,
+            "max": 350000
+          },
+          "additional_fees": {
+            "matriculation_fee": 23500,
+            "health_insurance": 3650
+          }
+        },
+        "international_students": {
+          "annual_fee_range": {
+            "min": 115000,
+            "max": 350000
+          },
+          "additional_fees": {
+            "matriculation_fee": 23500,
+            "health_insurance": 3650
+          }
+        }
+      },
+      "graduate": {
+        "mba_programs": {
+          "total_fee_range": {
+            "min": 500000,
+            "max": 550000
+          },
+          "duration_months": "18-24"
+        },
+        "masters_programs": {
+          "annual_fee_range": {
+            "min": 200000,
+            "max": 366667
+          }
+        }
+      }
+    }
+  }
+  
