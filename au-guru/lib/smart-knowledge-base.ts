@@ -18,8 +18,7 @@ export const KNOWLEDGE_CATEGORIES = {
     data: auHistory
   },
   tuitions: {
-    keywords: ["tuition", "fee", "cost", "price", "expensive", "cheap", "pay", "payment", "money", "scholarship", "financial", "afford", "budget", "matriculation", "insurance"]
-, 
+    keywords: ["tuition", "fee", "cost", "price", "expensive", "cheap", "pay", "payment", "money", "scholarship", "financial", "afford", "budget", "matriculation", "insurance"], 
     data: auTuitions
   }
 } as const
@@ -71,7 +70,7 @@ export class QueryClassifier {
 // Smart knowledge base that loads relevant data
 export class SmartKnowledgeBase {
   static getRelevantData(categories: KnowledgeCategory[]) {
-    const relevantData: Record<string, any> = {}
+    const relevantData: Record<string, unknown> = {}
     
     categories.forEach(category => {
       relevantData[category] = KNOWLEDGE_CATEGORIES[category].data
@@ -81,9 +80,7 @@ export class SmartKnowledgeBase {
   }
 
   // Generate a focused system prompt based on relevant data
-  static generateContextPrompt(categories: KnowledgeCategory[], relevantData: Record<string, any>): string {
-    let contextInfo = ""
-
+  static generateContextPrompt(categories: KnowledgeCategory[], relevantData: Record<string, unknown>): string {
     // Add base instruction
     let prompt = `You are AU Smart Assistant for Assumption University Thailand. Be helpful, friendly, and concise (2-3 sentences max).
 
@@ -92,14 +89,14 @@ AVAILABLE KNOWLEDGE:`
     // Add relevant data sections with error handling
     if (categories.includes('contacts') && relevantData.contacts) {
       try {
-        const contacts = relevantData.contacts
+        const contacts = relevantData.contacts as Record<string, unknown>
         prompt += `
 
 CONTACT INFORMATION:
-- Main Website: ${contacts.main_website || 'au.edu'}
+- Main Website: ${(contacts.main_website as string) || 'au.edu'}
 - Campuses:
-  • Hua Mak Campus: ${contacts.campuses?.[0]?.address || 'Bangkok'}, Phone: ${contacts.campuses?.[0]?.phone || '+66 2 719 1919'}
-  • Suvarnabhumi Campus: ${contacts.campuses?.[1]?.address || 'Samutprakarn'}, Phone: ${contacts.campuses?.[1]?.phone || '+66 2 723 2323'}`
+  • Hua Mak Campus: ${((contacts.campuses as Record<string, unknown>[])?.[0]?.address as string) || 'Bangkok'}, Phone: ${((contacts.campuses as Record<string, unknown>[])?.[0]?.phone as string) || '+66 2 719 1919'}
+  • Suvarnabhumi Campus: ${((contacts.campuses as Record<string, unknown>[])?.[1]?.address as string) || 'Samutprakarn'}, Phone: ${((contacts.campuses as Record<string, unknown>[])?.[1]?.phone as string) || '+66 2 723 2323'}`
       } catch (error) {
         console.error('Error processing contacts data:', error)
       }
@@ -107,8 +104,8 @@ CONTACT INFORMATION:
 
     if (categories.includes('faculties') && relevantData.faculties) {
       try {
-        const faculties = relevantData.faculties
-        const undergradSchools = faculties.faculties?.undergraduate?.map((school: any) => school.name).join(', ') || 'Business, Engineering, Computer Science, Arts'
+        const faculties = relevantData.faculties as Record<string, unknown>
+        const undergradSchools = ((faculties.faculties as Record<string, unknown>)?.undergraduate as Record<string, unknown>[])?.map((school: Record<string, unknown>) => school.name as string).join(', ') || 'Business, Engineering, Computer Science, Arts'
         prompt += `
 
 ACADEMIC PROGRAMS:
@@ -122,20 +119,20 @@ ACADEMIC PROGRAMS:
 
     if (categories.includes('tuitions') && relevantData.tuitions) {
       try {
-        const tuitions = relevantData.tuitions
-        const ugMin = tuitions.tuition_fees_thb?.undergraduate?.domestic_students?.annual_fee_range?.min?.toLocaleString() || '112,000'
-        const ugMax = tuitions.tuition_fees_thb?.undergraduate?.domestic_students?.annual_fee_range?.max?.toLocaleString() || '350,000'
-        const gradMin = tuitions.tuition_fees_thb?.graduate?.masters_programs?.annual_fee_range?.min?.toLocaleString() || '200,000'
-        const gradMax = tuitions.tuition_fees_thb?.graduate?.mba_programs?.total_fee_range?.max?.toLocaleString() || '550,000'
-        const matriculation = tuitions.tuition_fees_thb?.undergraduate?.domestic_students?.additional_fees?.matriculation_fee?.toLocaleString() || '23,500'
-        const insurance = tuitions.tuition_fees_thb?.undergraduate?.domestic_students?.additional_fees?.health_insurance?.toLocaleString() || '3,650'
+        const tuitions = relevantData.tuitions as Record<string, unknown>
+        const ugMin = ((((tuitions.tuition_fees_thb as Record<string, unknown>)?.undergraduate as Record<string, unknown>)?.domestic_students as Record<string, unknown>)?.annual_fee_range as Record<string, unknown>)?.min as number || 112000
+        const ugMax = ((((tuitions.tuition_fees_thb as Record<string, unknown>)?.undergraduate as Record<string, unknown>)?.domestic_students as Record<string, unknown>)?.annual_fee_range as Record<string, unknown>)?.max as number || 350000
+        const gradMin = ((((tuitions.tuition_fees_thb as Record<string, unknown>)?.graduate as Record<string, unknown>)?.masters_programs as Record<string, unknown>)?.annual_fee_range as Record<string, unknown>)?.min as number || 200000
+        const gradMax = ((((tuitions.tuition_fees_thb as Record<string, unknown>)?.graduate as Record<string, unknown>)?.mba_programs as Record<string, unknown>)?.total_fee_range as Record<string, unknown>)?.max as number || 550000
+        const matriculation = ((((tuitions.tuition_fees_thb as Record<string, unknown>)?.undergraduate as Record<string, unknown>)?.domestic_students as Record<string, unknown>)?.additional_fees as Record<string, unknown>)?.matriculation_fee as number || 23500
+        const insurance = ((((tuitions.tuition_fees_thb as Record<string, unknown>)?.undergraduate as Record<string, unknown>)?.domestic_students as Record<string, unknown>)?.additional_fees as Record<string, unknown>)?.health_insurance as number || 3650
         
         prompt += `
 
 TUITION FEES (THB):
-- Undergraduate: ${ugMin}-${ugMax} per year
-- Graduate/MBA: ${gradMin}-${gradMax} per year
-- Additional Fees: Matriculation ${matriculation} THB, Health Insurance ${insurance} THB`
+- Undergraduate: ${ugMin.toLocaleString()}-${ugMax.toLocaleString()} per year
+- Graduate/MBA: ${gradMin.toLocaleString()}-${gradMax.toLocaleString()} per year
+- Additional Fees: Matriculation ${matriculation.toLocaleString()} THB, Health Insurance ${insurance.toLocaleString()} THB`
       } catch (error) {
         console.error('Error processing tuitions data:', error)
       }
@@ -143,14 +140,14 @@ TUITION FEES (THB):
 
     if (categories.includes('history') && relevantData.history) {
       try {
-        const history = relevantData.history
-        const founded = history.history?.origins?.registration_year || '1938'
-        const originalName = history.history?.origins?.original_institution || 'Assumption Commercial College'
-        const universityEvent = history.history?.origins?.notable_dates?.find((d: any) => d.year === 1990)?.event || 'Granted full university status'
-        const founder = history.history?.origins?.founder || 'Brothers of St. Gabriel'
-        const totalStudents = history.history?.origins?.student_body?.total_students?.toLocaleString() || '100,000'
-        const internationalInfo = history.history?.origins?.student_body?.international_students || 'over 100 countries'
-        const philosophy = history.history?.origins?.philosophy || 'Open, international community with moral integrity'
+        const history = relevantData.history as Record<string, unknown>
+        const founded = ((history.history as Record<string, unknown>)?.origins as Record<string, unknown>)?.registration_year as string || '1938'
+        const originalName = ((history.history as Record<string, unknown>)?.origins as Record<string, unknown>)?.original_institution as string || 'Assumption Commercial College'
+        const universityEvent = (((history.history as Record<string, unknown>)?.origins as Record<string, unknown>)?.notable_dates as Record<string, unknown>[])?.find((d: Record<string, unknown>) => d.year === 1990)?.event as string || 'Granted full university status'
+        const founder = ((history.history as Record<string, unknown>)?.origins as Record<string, unknown>)?.founder as string || 'Brothers of St. Gabriel'
+        const totalStudents = (((history.history as Record<string, unknown>)?.origins as Record<string, unknown>)?.student_body as Record<string, unknown>)?.total_students as number || 100000
+        const internationalInfo = (((history.history as Record<string, unknown>)?.origins as Record<string, unknown>)?.student_body as Record<string, unknown>)?.international_students as string || 'over 100 countries'
+        const philosophy = ((history.history as Record<string, unknown>)?.origins as Record<string, unknown>)?.philosophy as string || 'Open, international community with moral integrity'
         
         prompt += `
 
@@ -158,7 +155,7 @@ UNIVERSITY HISTORY:
 - Founded: ${founded} as ${originalName}
 - University Status: ${universityEvent}
 - Founded by: ${founder}
-- Students: ${totalStudents}+ students from ${internationalInfo}
+- Students: ${totalStudents.toLocaleString()}+ students from ${internationalInfo}
 - Philosophy: ${philosophy}`
       } catch (error) {
         console.error('Error processing history data:', error)
