@@ -15,6 +15,8 @@ interface Message {
   content: string
   isBot: boolean
   timestamp: Date
+  categories?: string[]
+  tokenEstimate?: number
 }
 
 // Shared component styles
@@ -72,7 +74,9 @@ export default function Chatbot() {
             id: (Date.now() + 1).toString(),
             content: data.response,
             isBot: true,
-            timestamp: new Date()
+            timestamp: new Date(),
+            categories: data.categories,
+            tokenEstimate: data.tokenEstimate
           }
           setMessages(prev => [...prev, botResponse])
         } else {

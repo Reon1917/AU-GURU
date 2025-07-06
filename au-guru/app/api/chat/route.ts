@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
-import { AUGeminiClient } from "@/lib/gemini"
+import { GoogleGenAI } from "@google/genai"
+import { SmartKnowledgeBase } from "@/lib/smart-knowledge-base"
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,11 +20,31 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const client = new AUGeminiClient(process.env.GEMINI_API_KEY!)
-    const response = await client.generateResponse(message)
+    // Get contextual knowledge based on the query
+    const contextualKnowledge = SmartKnowledgeBase.getContextualKnowledge(message)
+    
+    // Initialize Gemini client
+    const client = new GoogleGenAI({
+      apiKey: process.env.GEMINI_API_KEY!
+    })
+
+    // Generate response with dynamic context
+    const result = await client.models.generateContent({
+      model: "gemini-1.5-flash",
+      contents: [
+        {
+          role: "user",
+          parts: [{ text: `${contextualKnowledge.prompt}\n\nUser: ${message}` }]
+        }
+      ]
+    })
+    
+    const response = result.text || "I apologize, but I couldn't generate a response. Please try again."
 
     return NextResponse.json({
       response,
+      categories: contextualKnowledge.categories,
+      tokenEstimate: contextualKnowledge.tokenEstimate,
       timestamp: new Date().toISOString()
     })
   } catch (error) {
