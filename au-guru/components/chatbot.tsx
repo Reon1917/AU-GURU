@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 
-import { Send, Settings, Moon, Sun } from "lucide-react"
+import { Send, Settings, Moon, Sun, RotateCcw } from "lucide-react"
 import { useTheme } from "next-themes"
 
 interface Message {
@@ -37,6 +37,7 @@ export default function Chatbot() {
   ])
   const [inputValue, setInputValue] = useState("")
   const [mounted, setMounted] = useState(false)
+  const [sessionId, setSessionId] = useState<string | null>(null)
   const { theme, setTheme } = useTheme()
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -52,6 +53,34 @@ export default function Chatbot() {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
     }
   }, [messages, isLoading])
+
+  const resetConversation = async () => {
+    if (sessionId) {
+      try {
+        await fetch('/api/chat', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            sessionId: sessionId,
+          }),
+        })
+      } catch (error) {
+        console.error('Reset conversation error:', error)
+      }
+    }
+    
+    // Reset UI state
+    setMessages([{
+      id: "1",
+      content: "Hello! I'm the AU Smart Assistant. I can help you with information about Assumption University's programs, admissions, campus life, and more. What would you like to know?",
+      isBot: true,
+      timestamp: new Date()
+    }])
+    setSessionId(null)
+    setInputValue("")
+  }
 
   const handleSend = async () => {
     if (inputValue.trim() && !isLoading) {
@@ -73,19 +102,23 @@ export default function Chatbot() {
           },
           body: JSON.stringify({
             message: inputValue,
+            sessionId: sessionId,
           }),
         })
 
         const data = await response.json()
         
         if (response.ok) {
+          // Update session ID if it's new
+          if (data.sessionId && !sessionId) {
+            setSessionId(data.sessionId)
+          }
+          
           const botResponse: Message = {
             id: (Date.now() + 1).toString(),
             content: data.response,
             isBot: true,
             timestamp: new Date(),
-            categories: data.categories,
-            tokenEstimate: data.tokenEstimate
           }
           setMessages(prev => [...prev, botResponse])
         } else {
@@ -146,6 +179,15 @@ export default function Chatbot() {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={resetConversation}
+                className="h-9 w-9 hover:bg-accent transition-colors"
+                title="Reset conversation"
+              >
+                <RotateCcw className="h-5 w-5" />
+              </Button>
               <Button
                 variant="ghost"
                 size="icon"
