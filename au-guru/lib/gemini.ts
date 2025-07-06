@@ -1,24 +1,4 @@
-"use client"
-
-import { GoogleGenAI } from "@google/genai";
-import auContacts from "@/data/au_contacts.json"
-import auFaculties from "@/data/au_faculties.json"
-import auHistory from "@/data/au_history.json"
-import auTuitions from "@/data/au_tuitions.json"
-
-interface KnowledgeBase {
-  contacts: typeof auContacts
-  faculties: typeof auFaculties  
-  history: typeof auHistory
-  tuitions: typeof auTuitions
-}
-
-const knowledgeBase: KnowledgeBase = {
-  contacts: auContacts,
-  faculties: auFaculties,
-  history: auHistory,
-  tuitions: auTuitions
-}
+import { GoogleGenAI } from "@google/genai"
 
 const SYSTEM_PROMPT = `You are AU Smart Assistant for Assumption University Thailand. Be helpful, friendly, and concise.
 
