@@ -17,6 +17,13 @@ interface Message {
   timestamp: Date
 }
 
+// Shared component styles
+const messageStyles = {
+  bot: "bg-muted/50 text-foreground border border-border/50",
+  user: "bg-primary text-primary-foreground",
+  container: "max-w-[85%] break-words"
+}
+
 export default function Chatbot() {
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -29,7 +36,6 @@ export default function Chatbot() {
   const [inputValue, setInputValue] = useState("")
   const [mounted, setMounted] = useState(false)
   const { theme, setTheme } = useTheme()
-
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
@@ -109,141 +115,143 @@ export default function Chatbot() {
   ]
 
   return (
-    <div className="flex flex-col h-screen bg-background">
-      {/* Header */}
-      <Card className="rounded-none border-x-0 border-t-0 shadow-sm">
-        <CardHeader className="px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Avatar className="h-10 w-10">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="w-full max-w-4xl h-[85vh] flex flex-col bg-background border border-border rounded-lg shadow-lg overflow-hidden">
+        {/* Header */}
+        <div className="border-b border-border bg-card/50 backdrop-blur-sm">
+          <div className="px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Avatar className="h-12 w-12 ring-2 ring-red-500/20">
+                  <AvatarImage src="/api/placeholder/48/48" alt="AU Bot" />
+                  <AvatarFallback className="bg-red-500 text-white font-semibold">
+                    AU
+                  </AvatarFallback>
+                </Avatar>
+                <div className="space-y-1">
+                  <h1 className="text-xl font-semibold text-foreground">AU Smart Assistant</h1>
+                  <p className="text-sm text-muted-foreground">Assumption University of Thailand</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                  className="h-9 w-9 hover:bg-accent"
+                  suppressHydrationWarning
+                >
+                  {mounted && theme === "dark" ? (
+                    <Sun className="h-5 w-5" />
+                  ) : (
+                    <Moon className="h-5 w-5" />
+                  )}
+                </Button>
+                <Button variant="ghost" size="icon" className="h-9 w-9 hover:bg-accent">
+                  <Settings className="h-5 w-5" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          {messages.map((message) => (
+            <div
+              key={message.id}
+              className={`flex gap-4 ${message.isBot ? "justify-start" : "justify-end"}`}
+            >
+              {message.isBot && (
+                <Avatar className="h-10 w-10 shrink-0 mt-1 ring-2 ring-red-500/20">
+                  <AvatarImage src="/api/placeholder/40/40" alt="AU Bot" />
+                  <AvatarFallback className="bg-red-500 text-white text-sm font-medium">
+                    AU
+                  </AvatarFallback>
+                </Avatar>
+              )}
+              <div className={`${messageStyles.container} ${message.isBot ? "text-left" : "text-right"}`}>
+                <div
+                  className={`inline-block rounded-2xl px-5 py-3 shadow-sm ${
+                    message.isBot
+                      ? messageStyles.bot
+                      : messageStyles.user
+                  }`}
+                >
+                  <p className="text-sm leading-relaxed">{message.content}</p>
+                </div>
+                <p className="text-xs text-muted-foreground mt-2 px-2">
+                  {formatTime(message.timestamp)}
+                </p>
+              </div>
+            </div>
+          ))}
+          
+          {/* Loading indicator */}
+          {isLoading && (
+            <div className="flex gap-4 justify-start">
+              <Avatar className="h-10 w-10 shrink-0 mt-1 ring-2 ring-red-500/20">
                 <AvatarImage src="/api/placeholder/40/40" alt="AU Bot" />
                 <AvatarFallback className="bg-red-500 text-white text-sm font-medium">
                   AU
                 </AvatarFallback>
               </Avatar>
-              <div>
-                <h1 className="text-lg font-semibold text-foreground">AU Smart Assistant</h1>
-                <p className="text-sm text-muted-foreground">Assumption University of Thailand</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="h-8 w-8"
-                suppressHydrationWarning
-              >
-                {mounted && theme === "dark" ? (
-                  <Sun className="h-4 w-4" />
-                ) : (
-                  <Moon className="h-4 w-4" />
-                )}
-              </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <Settings className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-      </Card>
-
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`flex gap-3 ${message.isBot ? "justify-start" : "justify-end"}`}
-          >
-            {message.isBot && (
-              <Avatar className="h-8 w-8 shrink-0 mt-1">
-                <AvatarImage src="/api/placeholder/32/32" alt="AU Bot" />
-                <AvatarFallback className="bg-red-500 text-white text-xs font-medium">
-                  AU
-                </AvatarFallback>
-              </Avatar>
-            )}
-            <div className={`max-w-[80%] ${message.isBot ? "text-left" : "text-right"}`}>
-              <div
-                className={`inline-block rounded-lg px-4 py-2 ${
-                  message.isBot
-                    ? "bg-muted text-foreground"
-                    : "bg-primary text-primary-foreground"
-                }`}
-              >
-                <p className="text-sm leading-relaxed">{message.content}</p>
-              </div>
-              <p className="text-xs text-muted-foreground mt-1 px-1">
-                {formatTime(message.timestamp)}
-              </p>
-            </div>
-          </div>
-        ))}
-        
-        {/* Loading indicator */}
-        {isLoading && (
-          <div className="flex gap-3 justify-start">
-            <Avatar className="h-8 w-8 shrink-0 mt-1">
-              <AvatarImage src="/api/placeholder/32/32" alt="AU Bot" />
-              <AvatarFallback className="bg-red-500 text-white text-xs font-medium">
-                AU
-              </AvatarFallback>
-            </Avatar>
-            <div className="max-w-[80%] text-left">
-              <div className="inline-block rounded-lg px-4 py-2 bg-muted text-foreground">
-                <div className="flex items-center gap-1">
-                  <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-current rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                    <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+              <div className="max-w-[85%] text-left">
+                <div className="inline-block rounded-2xl px-5 py-3 bg-muted/50 border border-border/50">
+                  <div className="flex items-center gap-3">
+                    <div className="flex space-x-1">
+                      <div className="w-2 h-2 bg-current rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    </div>
+                    <span className="text-sm text-muted-foreground">AU Smart Assistant is typing...</span>
                   </div>
-                  <span className="text-sm text-muted-foreground ml-2">AU Smart Assistant is typing...</span>
                 </div>
               </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
 
-      {/* Input Area */}
-      <div className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="p-4 space-y-4">
-          {/* Quick suggestions */}
-          <div className="flex flex-wrap gap-2">
-            {suggestions.map((suggestion, index) => (
-              <Badge
-                key={index}
-                variant="secondary"
-                className="cursor-pointer hover:bg-accent text-xs px-3 py-1"
-                onClick={() => setInputValue(suggestion)}
+        {/* Input Area */}
+        <div className="border-t border-border bg-card/50 backdrop-blur-sm">
+          <div className="p-6 space-y-4">
+            {/* Quick suggestions */}
+            <div className="flex flex-wrap gap-2">
+              {suggestions.map((suggestion, index) => (
+                <Badge
+                  key={index}
+                  variant="secondary"
+                  className="cursor-pointer hover:bg-accent transition-colors text-xs px-3 py-1.5 border border-border/50"
+                  onClick={() => setInputValue(suggestion)}
+                >
+                  {suggestion}
+                </Badge>
+              ))}
+            </div>
+
+            {/* Input */}
+            <div className="flex gap-3">
+              <Input
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder="Ask me about AU programs, admissions, campus life..."
+                className="flex-1 h-12 px-4 rounded-xl border-border/50 focus:border-primary transition-colors"
+                onKeyPress={(e) => {
+                  if (e.key === "Enter" && !isLoading) {
+                    handleSend()
+                  }
+                }}
+                disabled={isLoading}
+              />
+              <Button 
+                onClick={handleSend} 
+                size="icon"
+                className="h-12 w-12 rounded-xl shrink-0 shadow-sm"
+                disabled={!inputValue.trim() || isLoading}
               >
-                {suggestion}
-              </Badge>
-            ))}
-          </div>
-
-          {/* Input */}
-          <div className="flex gap-2">
-            <Input
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Ask me about AU programs, admissions, campus life..."
-              className="flex-1"
-              onKeyPress={(e) => {
-                if (e.key === "Enter" && !isLoading) {
-                  handleSend()
-                }
-              }}
-              disabled={isLoading}
-            />
-            <Button 
-              onClick={handleSend} 
-              size="icon"
-              className="shrink-0"
-              disabled={!inputValue.trim() || isLoading}
-            >
-              <Send className="h-4 w-4" />
-            </Button>
+                <Send className="h-5 w-5" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>
